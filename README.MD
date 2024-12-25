@@ -7,4 +7,3 @@
 ### ESP32 WROOM 38 PIN DEVKIT CUSTOM PCB 
 - 4MB flash 248KB RAM.
 ![ESP32](https://github.com/pangcrd/LVGL_Bassic-tutorial/blob/main/BassicButton/img/251.png)
- [Link product](https://s.shopee.vn/8AEKroeAht)
