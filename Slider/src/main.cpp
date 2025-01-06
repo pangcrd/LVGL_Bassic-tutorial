@@ -7,8 +7,9 @@
 EncoderRead encoder(33, 32, 34); //PinA, PinB,buttons (PinA and PinB must be connected to interrupt-supported pins).
 
 bool sliderAct = false;
-bool prevBtnState = false;
+bool prevBtnState  = false;
 uint16_t  sliderValue = 0;
+
 
 TaskHandle_t SliderTask;
 
@@ -56,32 +57,31 @@ void encoder_read(lv_indev_drv_t *indev_drv, lv_indev_data_t *data) {
     last_counter = counter;
 }
 
+
 void sliderFunc(void *pvParameters){
 
-     while (1) {  
+    while (1) {  
+      
+        if (encoder.encBtn()) {
+          if (!prevBtnState) {
+                sliderAct = !sliderAct; 
+             if (sliderAct) {
+                // Bật chế độ điều khiển slider -> Khóa focus tại slider
+                    lv_group_focus_freeze(group1, true);
+                    encoder.setCounter(sliderValue);
+                } else {
+                    lv_group_focus_freeze(group1, false);
+                    sliderValue = encoder.getCounter(); 
+                    //encoder.setCounter(0); // Đồng bộ giá trị slider về encoder
+                }
+                prevBtnState = true;  
+            }
+            } else {
+            prevBtnState = false; 
+            }
 
-      /*Uncomment all this line below.If you want to use the encoder button, click to control the slider. Click again to stop controlling the slider
-        Change "sliderAct = true" to "sliderAct"
-        This function use when you use more than 2 object EX: Button, Arc,Slider. You must enable this function */
-
-    //  if (encoder.encBtn()) {
-    //     if (!prevBtnState) {
-    //           sliderAct = !sliderAct;  
-    //       if (sliderAct) {
-    //         lv_group_focus_obj(ui_Slider1); 
-    //         encoder.setCounter(sliderValue);  //Reset the encoder value when returning to slider control.
-    //   } else {
-    //         lv_group_focus_obj(NULL);  // Set focus back to the previous object if not controlling the slider.
-    //         sliderValue = encoder.getCounter(); 
-    //         encoder.setCounter(0);  // Reset the encoder count value when no longer controlling the slider.
-    //         }
-    //         }
-    //       prevBtnState = true;  // The encoder button state has been updated to "pressed".
-    //   } else {
-    //       prevBtnState = false;  
-    //   }
-      //Limit encoder value 0-100%  to prevent overflow
-        if (sliderAct = true) {
+        //Limit encoder value 0-100%  to prevent overflow
+        if (sliderAct) {
             sliderValue = encoder.getCounter();
           if (sliderValue < 2) {
                 sliderValue = 0;
@@ -111,8 +111,6 @@ void sliderFunc(void *pvParameters){
         vTaskDelay(10);
     }
 }
-
-
 
 void setup() {
     Serial.begin(115200);
@@ -152,11 +150,12 @@ void setup() {
     lv_group_set_default(group1);//Set default group
 
     lv_group_add_obj(group1,ui_Slider1);//Your can rename button in Squareline.If you don't remember. You can check file ui_Screen.c
-    // lv_group_add_obj(group1,ui_Label3);
+    lv_group_add_obj(group1,ui_Image1);
     // lv_group_focus_obj(ui_Slider1);
 
     lv_group_get_focused(group1);
     lv_indev_set_group(encoder_indev, group1);//Set group for encoder so that the encoder can control the objects in group
+
 
     xTaskCreatePinnedToCore(sliderFunc,"SliderTask",4096,NULL,1,&SliderTask,0);// Run slider task and control LED
 
