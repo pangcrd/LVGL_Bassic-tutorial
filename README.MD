@@ -7,4 +7,6 @@
 
 ### ESP32 WROOM 38 PIN DEVKIT CUSTOM PCB 
 - 4MB flash 248KB RAM.
-![ESP32](https://github.com/pangcrd/LVGL_Bassic-tutorial/blob/main/BassicButton/img/251.png)
+![ESP32](https://github.com/pangcrd/LVGL_Bassic-tutorial/blob/main/BassicButton/img/251.png)  
+### CYD Cheap Yellow Display - ESP32-2432S028R  
+![CYD](https://github.com/pangcrd/LVGL_Bassic-tutorial/blob/main/CYD_LVGL_Arduino/img/cyd.png)
