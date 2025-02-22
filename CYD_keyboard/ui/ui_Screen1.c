@@ -25,8 +25,6 @@ void ui_Screen1_screen_init(void)
     lv_obj_set_style_text_color(ui_Keyboard1, lv_color_hex(0x000000), LV_PART_ITEMS | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_Keyboard1, 255, LV_PART_ITEMS | LV_STATE_DEFAULT);
 
-    // Add keyboard event
-    lv_obj_add_event_cb(ui_Keyboard1, ui_event_Keyboard1, LV_EVENT_READY, NULL);
 
     ui_Panel2 = lv_obj_create(ui_Screen1);
     lv_obj_set_width(ui_Panel2, 308);
@@ -57,5 +55,7 @@ void ui_Screen1_screen_init(void)
     lv_obj_set_style_text_font(ui_Label1, &lv_font_montserrat_16, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     lv_obj_add_event_cb(ui_TextArea1, ui_event_TextArea1, LV_EVENT_ALL, NULL);
+    // Add keyboard event
+    lv_obj_add_event_cb(ui_Keyboard1, ui_event_Keyboard1, LV_EVENT_READY, NULL);
 
 }
