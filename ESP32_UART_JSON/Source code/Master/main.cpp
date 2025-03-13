@@ -45,11 +45,13 @@ void CreateJsonData(const String &type){
 void dataPacketCreate(){
   myPacket.buttonstate = digitalRead(buttonPin); // read button state
    if (myPacket.buttonstate != lastbuttonstate){
+    
+      lastbuttonstate = myPacket.buttonstate; //update when button state changes
+      Serial.println(myPacket.buttonstate);
       if(myPacket.buttonstate == LOW){
         CreateJsonData("button"); //Add to JSON
       }
-      lastbuttonstate = myPacket.buttonstate; //update when button state changes
-      Serial.println(myPacket.buttonstate);
+
    }
   // Potentiometer read
   uint16_t potentiometerValue = analogRead(potentiometer);
