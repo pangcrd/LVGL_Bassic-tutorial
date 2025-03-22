@@ -1,0 +1,7 @@
+Support RGB565A8 arc/slide image 
+Copy and replace lv_draw_sw_arc file into "\lvgl\src\draw\sw"
+Work with lvgl ver 9.x
+For LVGL 8.x don't make any changes.
+
+Description of the feature or fix
+https://github.com/lvgl/lvgl/pull/6009
