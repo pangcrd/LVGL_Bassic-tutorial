@@ -28,7 +28,7 @@ bool ButtonInit::debounce(uint8_t pin, bool &lastState, unsigned long &lastDebou
             lastState = currentState;
         }
     }
-    /** pull-up, press button is LOW signal*/
+    /** pull-down, press button is LOW signal*/
     return (currentState == LOW);
 }
 
