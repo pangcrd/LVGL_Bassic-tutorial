@@ -115,7 +115,7 @@ namespace Weather {
   float windSpeed = 0;
 
 /** Add you City and API key:: Ex: Soc Trang => Soc%20Trang Ho%20Chi%20Minh%20City || appid = your_api_key*/
-  String weatherUrl = "http://api.openweathermap.org/data/2.5/weather?q= Ho%20Chi%20Minh%20City&appid=your_api_key";
+  String weatherUrl = "http://api.openweathermap.org/data/2.5/weather?q=Ho%20Chi%20Minh%20City&appid=your_api_key";
   TaskHandle_t weatherTaskHandle = NULL;
 
 /** Parse JSON data */
