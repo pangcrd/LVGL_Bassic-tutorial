@@ -1,0 +1,162 @@
+
+/////////////////////////////////////////////////////////////////////////////
+//                                                                         //
+// Example custom ESP32 TFT LCD                                            // 
+// Design UI on Squareline Studio. LVGL V9.1                               //
+// Youtube:https://www.youtube.com/@pangcrd                                //
+// Github: https://github.com/pangcrd                                      //
+//                                                                         //
+/////////////////////////////////////////////////////////////////////////////
+
+#include <Arduino.h>
+#include <TFT_eSPI.h>
+#include <SPI.h>
+#include "lvgl.h"
+#include "ui/ui.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include <Adafruit_Sensor.h>
+#include <DHT.h>
+
+/** Digital pin connected to the DHT sensor **/ 
+#define DHTPIN 26 
+
+/** Type of sensor in use: **/
+#define DHTTYPE    DHT22
+DHT dht(DHTPIN, DHTTYPE);   
+
+/*Don't forget to set Sketchbook location in File/Preferences to the path of your UI project (the parent foder of this INO file)*/
+/*Change to your screen resolution*/
+static const uint16_t screenWidth  = 320;
+static const uint16_t screenHeight = 240;
+
+
+enum { SCREENBUFFER_SIZE_PIXELS = screenWidth * screenHeight / 10 };
+static lv_color_t buf [SCREENBUFFER_SIZE_PIXELS];
+
+TFT_eSPI tft = TFT_eSPI( screenWidth, screenHeight ); /* TFT instance */
+
+/* Display flushing */
+void my_disp_flush (lv_display_t *disp, const lv_area_t *area, uint8_t *pixelmap)
+{
+    uint32_t w = ( area->x2 - area->x1 + 1 );
+    uint32_t h = ( area->y2 - area->y1 + 1 );
+
+    if (LV_COLOR_16_SWAP) {
+        size_t len = lv_area_get_size( area );
+        lv_draw_sw_rgb565_swap( pixelmap, len );
+    }
+
+    tft.startWrite();
+    tft.setAddrWindow( area->x1, area->y1, w, h );
+    tft.pushColors( (uint16_t*) pixelmap, w * h, true );
+    tft.endWrite();
+
+
+    lv_disp_flush_ready( disp );
+}
+
+/*========== Read the touch driver ==========*/
+void my_touch_read (lv_indev_t *indev_drv, lv_indev_data_t * data)
+{
+
+}
+
+/*Set tick routine needed for LVGL internal timings*/
+static uint32_t my_tick_get_cb (void) { return millis(); }
+
+
+void show_loading_cb(lv_timer_t * timer) {
+    //_ui_screen_change(&ui_Main, LV_SCR_LOAD_ANIM_MOVE_LEFT, 500, 0, &ui_Main_screen_init);
+    lv_scr_load_anim(ui_Main, LV_SCR_LOAD_ANIM_NONE, 10, 0, false);
+    lv_timer_del(timer);
+}
+
+void startupSound(void *pvParam) {
+
+    /** Nitendo sound */
+    int melody[]   = { 659, 784, 880, 988, 1046 };  
+    int duration[] = { 100, 100, 100, 100, 200 };
+    /** System boot sound */
+    // int melody[]   = { 1319, 880, 1760 };  
+    // int duration[] = { 100, 150, 250};
+    /** e - ooo - eeeee */
+    // int melody[] = { 880, 1046, 1319 };      
+    // int duration[] = { 150, 150, 200 };
+
+    const int length = sizeof(melody) / sizeof(melody[0]);
+
+    for (int i = 0; i < length; i++) {
+        tone(25, melody[i], duration[i]);
+        vTaskDelay(pdMS_TO_TICKS(duration[i] + 110));
+    }
+
+    noTone(25);
+    vTaskDelete(NULL);
+}
+
+void DHTtimer(lv_timer_t * timer) { /** Create timer for DHT sensor **/
+    float h = dht.readHumidity();  
+    float t = dht.readTemperature(); 
+    /** Convert float to string **/ 
+    String tempString = String(t, 1)+ "";
+    const char* tempValue = tempString.c_str();   /** Convert string to const char **/ 
+    lv_label_set_text(ui_Label1, tempValue);
+
+    /** Humidity **/
+    String humidString = String(h, 1)+ "";
+    const char* humiValue = humidString.c_str();
+    lv_label_set_text(ui_Label2, humiValue);
+
+    // Update UI components with different values
+    lv_arc_set_value(ui_Arc1, t);
+    lv_arc_set_value(ui_Arc2, h);
+
+    /** Chart display **/
+    lv_chart_set_next_value(ui_Chart1, ui_Chart1_series_1,t);
+    lv_chart_set_next_value(ui_Chart1, ui_Chart1_series_2, h);
+    lv_chart_refresh(ui_Chart1); /** Refresh the chart **/
+
+}
+
+
+void setup (){
+
+    Serial.begin( 115200 );
+    lv_init();
+    pinMode(25, OUTPUT ); // Set GPIO 25 as output for the buzzer
+    dht.begin();
+
+
+    tft.begin();         /* TFT init */
+    tft.setRotation(1); /* Landscape orientation, flipped */
+                                            
+    static lv_disp_t* disp;
+    disp = lv_display_create( screenWidth, screenHeight );
+    lv_display_set_buffers( disp, buf, NULL, SCREENBUFFER_SIZE_PIXELS * sizeof(lv_color_t), LV_DISPLAY_RENDER_MODE_PARTIAL );
+    lv_display_set_flush_cb( disp, my_disp_flush );
+
+    //Initialize the input device. For LVGL version 9+ only
+    lv_indev_t *touch_indev = lv_indev_create();
+    lv_indev_set_type(touch_indev, LV_INDEV_TYPE_POINTER);
+    lv_indev_set_read_cb(touch_indev, my_touch_read);
+
+
+    lv_tick_set_cb( my_tick_get_cb );
+
+    ui_init();
+
+    lv_timer_create(show_loading_cb, 2000, NULL);
+    lv_timer_create(DHTtimer,1000,NULL);
+    xTaskCreatePinnedToCore(startupSound,"StartupSound",2048,NULL,2,NULL,0 );  
+
+
+    Serial.println( "Setup done" );
+}
+
+
+void loop ()
+{   
+    lv_timer_handler(); /* let the GUI do its work */
+    delay(5);  
+}

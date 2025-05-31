@@ -1,12 +1,13 @@
 
 /////////////////////////////////////////////////////////////////////////////
 //                                                                         //
-// Example CYD  ESP32-2432S028R [ESP NOW DHT22]                            // 
+// Example custom ESP32 TFT LCD                                            // 
 // Design UI on Squareline Studio. LVGL V9.1                               //
 // Youtube:https://www.youtube.com/@pangcrd                                //
 // Github: https://github.com/pangcrd                                      //
 //                                                                         //
 /////////////////////////////////////////////////////////////////////////////
+
 
 #include <Arduino.h>
 #include <TFT_eSPI.h>

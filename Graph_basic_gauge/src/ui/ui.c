@@ -9,9 +9,15 @@
 ///////////////////// VARIABLES ////////////////////
 
 
-// SCREEN: ui_Screen1
-void ui_Screen1_screen_init(void);
-lv_obj_t * ui_Screen1;
+// SCREEN: ui_Main
+void ui_Main_screen_init(void);
+lv_obj_t * ui_Main;
+lv_obj_t * ui_Image1;
+lv_obj_t * ui_Label3;
+lv_obj_t * ui_Label4;
+lv_obj_t * ui_Image2;
+lv_obj_t * ui_Label5;
+lv_obj_t * ui_Label6;
 void ui_event_Arc1(lv_event_t * e);
 lv_obj_t * ui_Arc1;
 lv_obj_t * ui_Label1;
@@ -22,7 +28,14 @@ lv_obj_t * ui_Chart1;
 lv_obj_t * ui_Chart1_Xaxis;
 lv_obj_t * ui_Chart1_Yaxis1;
 lv_obj_t * ui_Chart1_Yaxis2;
+
+
+// SCREEN: ui_Loading
+void ui_Loading_screen_init(void);
+lv_obj_t * ui_Loading;
+lv_obj_t * ui_Image3;
 lv_obj_t * ui____initial_actions0;
+const lv_image_dsc_t * ui_imgset_p[1] = {&ui_img_p1_png};
 
 ///////////////////// TEST LVGL SETTINGS ////////////////////
 #if LV_COLOR_DEPTH != 16
@@ -36,7 +49,6 @@ void ui_event_Arc1(lv_event_t * e)
 {
     lv_event_code_t event_code = lv_event_get_code(e);
     lv_obj_t * target = lv_event_get_target(e);
-    lv_obj_add_flag(ui_Arc1, LV_OBJ_FLAG_CLICK_FOCUSABLE);
     if(event_code == LV_EVENT_VALUE_CHANGED) {
         _ui_arc_set_text_value(ui_Label1, target, "", "*C");
     }
@@ -45,7 +57,6 @@ void ui_event_Arc2(lv_event_t * e)
 {
     lv_event_code_t event_code = lv_event_get_code(e);
     lv_obj_t * target = lv_event_get_target(e);
-    lv_obj_add_flag(ui_Arc2, LV_OBJ_FLAG_CLICK_FOCUSABLE);
     if(event_code == LV_EVENT_VALUE_CHANGED) {
         _ui_arc_set_text_value(ui_Label2, target, "", "%");
     }
@@ -59,7 +70,8 @@ void ui_init(void)
     lv_theme_t * theme = lv_theme_default_init(dispp, lv_palette_main(LV_PALETTE_BLUE), lv_palette_main(LV_PALETTE_RED),
                                                false, LV_FONT_DEFAULT);
     lv_disp_set_theme(dispp, theme);
-    ui_Screen1_screen_init();
+    ui_Main_screen_init();
+    ui_Loading_screen_init();
     ui____initial_actions0 = lv_obj_create(NULL);
-    lv_disp_load_scr(ui_Screen1);
+    lv_disp_load_scr(ui_Main);
 }

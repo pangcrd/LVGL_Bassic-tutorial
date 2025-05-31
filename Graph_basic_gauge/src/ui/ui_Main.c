@@ -5,81 +5,78 @@
 
 #include "ui.h"
 
-lv_chart_series_t * ui_Chart1_series_1 = NULL;
-lv_chart_series_t * ui_Chart1_series_2 = NULL;
-
-/** Add fade effect for chart **/
-static void add_faded_area(lv_event_t * e)
+void ui_Main_screen_init(void)
 {
-    lv_obj_t * obj = lv_event_get_target(e);
+    ui_Main = lv_obj_create(NULL);
+    lv_obj_remove_flag(ui_Main, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+    lv_obj_set_style_bg_color(ui_Main, lv_color_hex(0x141414), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(ui_Main, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    lv_draw_task_t * draw_task = lv_event_get_draw_task(e);
-    lv_draw_dsc_base_t * base_dsc = draw_task->draw_dsc;
+    ui_Image1 = lv_image_create(ui_Main);
+    lv_image_set_src(ui_Image1, &ui_img_p1_png);
+    lv_obj_set_width(ui_Image1, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_Image1, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_Image1, -64);
+    lv_obj_set_y(ui_Image1, -52);
+    lv_obj_set_align(ui_Image1, LV_ALIGN_CENTER);
+    lv_obj_add_flag(ui_Image1, LV_OBJ_FLAG_CLICKABLE);     /// Flags
+    lv_obj_remove_flag(ui_Image1, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
 
-    const lv_chart_series_t * ser = lv_chart_get_series_next(obj, NULL);
+    ui_Label3 = lv_label_create(ui_Image1);
+    lv_obj_set_width(ui_Label3, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_Label3, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_Label3, -65);
+    lv_obj_set_y(ui_Label3, -39);
+    lv_obj_set_align(ui_Label3, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_Label3, "TEMP");
+    lv_obj_set_style_text_color(ui_Label3, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_opa(ui_Label3, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_Label3, &lv_font_montserrat_16, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    /*Draw a triangle below the line witch some opacity gradient*/
-    lv_draw_line_dsc_t * draw_line_dsc = draw_task->draw_dsc;
-    lv_draw_triangle_dsc_t tri_dsc;
+    ui_Label4 = lv_label_create(ui_Image1);
+    lv_obj_set_width(ui_Label4, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_Label4, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_Label4, -67);
+    lv_obj_set_y(ui_Label4, -9);
+    lv_obj_set_align(ui_Label4, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_Label4, "°C");
+    lv_obj_set_style_text_color(ui_Label4, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_opa(ui_Label4, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_Label4, &lv_font_montserrat_16, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    lv_draw_triangle_dsc_init(&tri_dsc);
-    tri_dsc.p[0].x = draw_line_dsc->p1.x;
-    tri_dsc.p[0].y = draw_line_dsc->p1.y;
-    tri_dsc.p[1].x = draw_line_dsc->p2.x;
-    tri_dsc.p[1].y = draw_line_dsc->p2.y;
-    tri_dsc.p[2].x = draw_line_dsc->p1.y < draw_line_dsc->p2.y ? draw_line_dsc->p1.x : draw_line_dsc->p2.x;
-    tri_dsc.p[2].y = LV_MAX(draw_line_dsc->p1.y, draw_line_dsc->p2.y);
-    tri_dsc.bg_grad.dir = LV_GRAD_DIR_VER;
+    ui_Image2 = lv_image_create(ui_Main);
+    lv_image_set_src(ui_Image2, &ui_img_p1_png);
+    lv_obj_set_width(ui_Image2, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_Image2, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_Image2, 95);
+    lv_obj_set_y(ui_Image2, -53);
+    lv_obj_set_align(ui_Image2, LV_ALIGN_CENTER);
+    lv_obj_add_flag(ui_Image2, LV_OBJ_FLAG_CLICKABLE);     /// Flags
+    lv_obj_remove_flag(ui_Image2, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
 
-    int32_t full_h = lv_obj_get_height(obj);
-    int32_t fract_uppter = (int32_t)(LV_MIN(draw_line_dsc->p1.y, draw_line_dsc->p2.y) - obj->coords.y1) * 255 / full_h;
-    int32_t fract_lower = (int32_t)(LV_MAX(draw_line_dsc->p1.y, draw_line_dsc->p2.y) - obj->coords.y1) * 255 / full_h;
-    tri_dsc.bg_grad.stops[0].color = draw_line_dsc->color;
-    tri_dsc.bg_grad.stops[0].opa = 255 - fract_uppter;
-    tri_dsc.bg_grad.stops[0].frac = 0;
-    tri_dsc.bg_grad.stops[0].color = draw_line_dsc->color;
-    tri_dsc.bg_grad.stops[1].opa = 255 - fract_lower;
-    tri_dsc.bg_grad.stops[1].frac = 255;
+    ui_Label5 = lv_label_create(ui_Image2);
+    lv_obj_set_width(ui_Label5, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_Label5, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_Label5, -65);
+    lv_obj_set_y(ui_Label5, -39);
+    lv_obj_set_align(ui_Label5, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_Label5, "HUMI");
+    lv_obj_set_style_text_color(ui_Label5, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_opa(ui_Label5, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_Label5, &lv_font_montserrat_16, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    lv_draw_triangle(base_dsc->layer, &tri_dsc);
+    ui_Label6 = lv_label_create(ui_Image2);
+    lv_obj_set_width(ui_Label6, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_Label6, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_Label6, -65);
+    lv_obj_set_y(ui_Label6, -9);
+    lv_obj_set_align(ui_Label6, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_Label6, "%");
+    lv_obj_set_style_text_color(ui_Label6, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_opa(ui_Label6, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_Label6, &lv_font_montserrat_16, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    /*Draw rectangle below the triangle*/
-    lv_draw_rect_dsc_t rect_dsc;
-    lv_draw_rect_dsc_init(&rect_dsc);
-    rect_dsc.bg_grad.dir = LV_GRAD_DIR_VER;
-    rect_dsc.bg_grad.stops[0].color = draw_line_dsc->color;
-    rect_dsc.bg_grad.stops[0].frac = 0;
-    rect_dsc.bg_grad.stops[0].opa = 255 - fract_lower;
-    rect_dsc.bg_grad.stops[0].color = draw_line_dsc->color;
-    rect_dsc.bg_grad.stops[1].frac = 255;
-    rect_dsc.bg_grad.stops[1].opa = 0;
-
-    lv_area_t rect_area;
-    rect_area.x1 = (int32_t)draw_line_dsc->p1.x;
-    rect_area.x2 = (int32_t)draw_line_dsc->p2.x - 1;
-    rect_area.y1 = (int32_t)LV_MAX(draw_line_dsc->p1.y, draw_line_dsc->p2.y) - 1;
-    rect_area.y2 = (int32_t)obj->coords.y2;
-    lv_draw_rect(base_dsc->layer, &rect_dsc, &rect_area);
-}
-
-static void draw_event_cb(lv_event_t * e)
-{
-    lv_draw_task_t * draw_task = lv_event_get_draw_task(e);
-    lv_draw_dsc_base_t * base_dsc = draw_task->draw_dsc;
-
-    if(base_dsc->part == LV_PART_ITEMS && draw_task->type == LV_DRAW_TASK_TYPE_LINE) {
-        add_faded_area(e);
-
-    }
-}
-
-void ui_Screen1_screen_init(void)
-{
-    ui_Screen1 = lv_obj_create(NULL);
-    lv_obj_remove_flag(ui_Screen1, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
-    lv_obj_set_style_bg_image_src(ui_Screen1, &ui_img_bg_png, LV_PART_MAIN | LV_STATE_DEFAULT);
-
-    ui_Arc1 = lv_arc_create(ui_Screen1);
+    ui_Arc1 = lv_arc_create(ui_Main);
     lv_obj_set_width(ui_Arc1, 90);
     lv_obj_set_height(ui_Arc1, 90);
     lv_obj_set_x(ui_Arc1, -54);
@@ -106,7 +103,7 @@ void ui_Screen1_screen_init(void)
     lv_obj_set_style_text_opa(ui_Label1, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_font(ui_Label1, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    ui_Arc2 = lv_arc_create(ui_Screen1);
+    ui_Arc2 = lv_arc_create(ui_Main);
     lv_obj_set_width(ui_Arc2, 90);
     lv_obj_set_height(ui_Arc2, 90);
     lv_obj_set_x(ui_Arc2, 105);
@@ -135,7 +132,7 @@ void ui_Screen1_screen_init(void)
     lv_obj_set_style_text_opa(ui_Label2, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_font(ui_Label2, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    ui_Chart1 = lv_chart_create(ui_Screen1);
+    ui_Chart1 = lv_chart_create(ui_Main);
     lv_obj_set_width(ui_Chart1, 312);
     lv_obj_set_height(ui_Chart1, 122);
     lv_obj_set_x(ui_Chart1, 0);
@@ -196,18 +193,14 @@ void ui_Screen1_screen_init(void)
     lv_scale_set_total_tick_count(ui_Chart1_Yaxis2, (5 > 0 ? 5 - 1 : 0) * 2 + 1);
     lv_scale_set_major_tick_every(ui_Chart1_Yaxis2, 2 >= 1 ? 2 : 1);
     lv_scale_set_label_show(ui_Chart1_Yaxis2, false);
-    ui_Chart1_series_1 = lv_chart_add_series(ui_Chart1, lv_color_hex(0xFC4ED4),
+    lv_chart_series_t * ui_Chart1_series_1 = lv_chart_add_series(ui_Chart1, lv_color_hex(0xFC4ED4),
                                                                  LV_CHART_AXIS_PRIMARY_Y);
-    static lv_coord_t ui_Chart1_series_1_array[15] = {0 };
+    static lv_coord_t ui_Chart1_series_1_array[] = { 0, 333 };
     lv_chart_set_ext_y_array(ui_Chart1, ui_Chart1_series_1, ui_Chart1_series_1_array);
-    ui_Chart1_series_2 = lv_chart_add_series(ui_Chart1, lv_color_hex(0x0CEF8A),
+    lv_chart_series_t * ui_Chart1_series_2 = lv_chart_add_series(ui_Chart1, lv_color_hex(0x0CEF8A),
                                                                  LV_CHART_AXIS_SECONDARY_Y);
-    static lv_coord_t ui_Chart1_series_2_array[15] = {0};
+    static lv_coord_t ui_Chart1_series_2_array[] = { 33, 444 };
     lv_chart_set_ext_y_array(ui_Chart1, ui_Chart1_series_2, ui_Chart1_series_2_array);
-
-    lv_obj_add_event_cb(ui_Chart1, draw_event_cb, LV_EVENT_DRAW_TASK_ADDED, NULL);
-    lv_obj_add_flag(ui_Chart1, LV_OBJ_FLAG_SEND_DRAW_TASK_EVENTS);
-
 
 
 

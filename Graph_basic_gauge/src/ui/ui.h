@@ -15,9 +15,15 @@ extern "C" {
 #include "ui_helpers.h"
 #include "ui_events.h"
 
-// SCREEN: ui_Screen1
-void ui_Screen1_screen_init(void);
-extern lv_obj_t * ui_Screen1;
+// SCREEN: ui_Main
+void ui_Main_screen_init(void);
+extern lv_obj_t * ui_Main;
+extern lv_obj_t * ui_Image1;
+extern lv_obj_t * ui_Label3;
+extern lv_obj_t * ui_Label4;
+extern lv_obj_t * ui_Image2;
+extern lv_obj_t * ui_Label5;
+extern lv_obj_t * ui_Label6;
 void ui_event_Arc1(lv_event_t * e);
 extern lv_obj_t * ui_Arc1;
 extern lv_obj_t * ui_Label1;
@@ -28,11 +34,15 @@ extern lv_obj_t * ui_Chart1;
 extern lv_obj_t * ui_Chart1_Xaxis;
 extern lv_obj_t * ui_Chart1_Yaxis1;
 extern lv_obj_t * ui_Chart1_Yaxis2;
+// SCREEN: ui_Loading
+void ui_Loading_screen_init(void);
+extern lv_obj_t * ui_Loading;
+extern lv_obj_t * ui_Image3;
 extern lv_obj_t * ui____initial_actions0;
-extern lv_chart_series_t * ui_Chart1_series_1;
-extern lv_chart_series_t * ui_Chart1_series_2;
 
-LV_IMG_DECLARE(ui_img_bg_png);    // assets/BG.png
+
+LV_IMG_DECLARE(ui_img_p1_png);    // assets/p1.png
+LV_IMG_DECLARE(ui_img_1125366089);    // assets/jlcpcb-logo.png
 
 
 
